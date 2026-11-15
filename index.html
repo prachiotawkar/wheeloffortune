@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#180a38">
+  <meta name="description" content="A vibrant, fully playable multiplayer word-puzzle wheel game.">
+  <title>Fortune Wheel — The Grand Game Show</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="puzzles.js" defer></script>
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <div class="spotlight spotlight-a" aria-hidden="true"></div>
+  <div class="spotlight spotlight-b" aria-hidden="true"></div>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+  <div class="shell">
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">✦</div>
+        <div>
+          <p class="eyebrow">THE GRAND GAME SHOW</p>
+          <h1>FORTUNE <span>WHEEL</span></h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="soundButton" class="utility-button" type="button" aria-label="Toggle sound" aria-pressed="true">🔊 <span>Sound on</span></button>
+        <button id="newGameButton" class="utility-button" type="button">↺ <span>New game</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="game-banner" aria-label="Game status">
+        <div class="round-label">
+          <span class="status-dot"></span><span id="roundIndicator">ROUND 1 OF 5</span>
+        </div>
+        <div id="bannerMessage" class="banner-message" role="status" aria-live="polite">Your next big moment starts here.</div>
+        <div id="timerBox" class="timer-box" aria-label="Guess time remaining"><span class="timer-icon">◷</span> <strong id="timerValue">--</strong><small>SEC</small></div>
+      </section>
+
+      <section id="scoreBoard" class="scoreboard" aria-label="Player scores"></section>
+
+      <div class="game-layout">
+        <section class="panel wheel-panel" aria-label="Spinning wheel">
+          <div class="panel-heading"><span class="panel-heading-icon">✧</span><span>WHEEL OF POSSIBILITY</span></div>
+          <div class="wheel-frame">
+            <div class="pointer" id="wheelPointer" aria-hidden="true"></div>
+            <canvas id="wheelCanvas" width="840" height="840" role="img" aria-label="Fourteen segment prize wheel with cash values and special spaces"></canvas>
+            <div class="wheel-hub" aria-hidden="true"><span>✦</span></div>
+          </div>
+          <div class="landed-card" id="landedCard" aria-live="polite"><span>✧</span> Spin to reveal your prize!</div>
+          <button id="spinButton" class="button button-gold spin-button" type="button"><span>⟳</span> SPIN THE WHEEL <span>✧</span></button>
+          <p class="micro-copy">Every spin is a new chance to shine.</p>
+        </section>
+
+        <section class="panel puzzle-panel" aria-label="Word puzzle">
+          <div class="puzzle-topbar">
+            <div>
+              <p class="tiny-label">THE CATEGORY IS</p>
+              <h2 id="categoryTitle">Mystery category</h2>
+            </div>
+            <span class="category-badge">✦ WORD PUZZLE</span>
+          </div>
+          <div class="board-trim"><div class="light-strip" aria-hidden="true"></div>
+            <div id="puzzleBoard" class="puzzle-board" aria-label="Hidden word puzzle"></div>
+            <div class="light-strip" aria-hidden="true"></div>
+          </div>
+          <button class="hint-trigger" type="button" id="hintButton">✧ Reveal a hint</button>
+          <p id="hintText" class="hint-text" hidden></p>
+          <div class="puzzle-footer">
+            <div><span class="footer-label">LETTERS REVEALED</span><div id="progressBar" class="progress-bar"><div id="progressFill" class="progress-fill"></div></div></div>
+            <strong id="progressText">0 / 0</strong>
+          </div>
+          <div id="gameAnnouncement" class="announcement" role="status" aria-live="polite">Welcome to Fortune Wheel!</div>
+        </section>
+
+        <section class="panel play-panel" aria-label="Player actions">
+          <div class="panel-heading"><span class="panel-heading-icon">✧</span><span>YOUR MOVE</span></div>
+          <div class="turn-callout"><span class="turn-callout-small">NOW PLAYING</span><strong id="turnName">Player 1</strong><span id="turnPrompt">Spin the wheel to get started.</span></div>
+          <div class="letter-heading"><span>CHOOSE A LETTER</span><span id="selectedLetter" class="selected-pill">—</span></div>
+          <div id="letterGrid" class="letter-grid" role="group" aria-label="Alphabet letter choices"></div>
+          <p id="letterNote" class="letter-note">Consonants earn points. Vowels cost 250.</p>
+          <div class="action-grid">
+            <button id="guessButton" class="button button-primary" type="button">GUESS LETTER</button>
+            <button id="vowelButton" class="button button-secondary" type="button">BUY VOWEL · 250</button>
+            <button id="solveButton" class="button button-outline" type="button">✧ SOLVE PUZZLE</button>
+          </div>
+          <div id="solveArea" class="solve-area" hidden>
+            <label for="solveInput">Enter the full answer</label>
+            <input id="solveInput" type="text" maxlength="90" spellcheck="false" autocomplete="off" placeholder="Type your solution...">
+            <div class="solve-actions"><button id="submitSolveButton" class="button button-primary" type="button">SUBMIT ANSWER</button><button id="cancelSolveButton" class="button button-outline" type="button">CANCEL</button></div>
+          </div>
+          <div class="free-spin-note" id="freeSpinNote">✦ Free spin tokens: <strong>0</strong></div>
+        </section>
+      </div>
+
+      <section class="round-track" aria-label="Game progress">
+        <p>YOUR JOURNEY</p><div id="roundTrack" class="round-track-items"></div>
+        <button id="nextRoundButton" type="button" class="button button-outline next-round-bottom" hidden>NEXT ROUND →</button>
+      </section>
+      <footer class="site-footer">✦ BIG SPINS. BRIGHT MOMENTS. BRAGGING RIGHTS. ✦ <span>Press A–Z to select letters · Enter to confirm</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="presentation">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-emblem" id="modalEmblem">✦</div>
+      <p class="modal-kicker" id="modalKicker">WELCOME TO THE SHOW</p>
+      <h2 id="modalTitle">Your fortune awaits</h2>
+      <p class="modal-description" id="modalDescription">Gather your players and let the game begin!</p>
+      <div id="modalContent"></div>
+      <div id="modalActions" class="modal-actions"></div>
+    </div>
+  </div>
+</body>
+</html>
